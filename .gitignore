@@ -1,0 +1,10 @@
+CMakeCache.txt
+CMakeFiles/**
+install_manifest.txt
+Makefile
+*.s
+cmake_install.cmake
+pano-projector
+perf.data
+perf.data.old
+*.swp
