@@ -1,0 +1,5 @@
+Checks: >
+  -modernize-use-equals-default,
+  -modernize-use-nodiscard,
+  -modernize-pass-by-value,
+  -cppcoreguidelines-narrowing-conversions

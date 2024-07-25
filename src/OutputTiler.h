@@ -30,13 +30,13 @@ public:
 	OutputTiler(const OutputTiler & other) = delete;
 
 	/** Can be moved -- so that it can go in a std::vector */
-	OutputTiler(OutputTiler && other);
+	OutputTiler(OutputTiler && other) noexcept;
 
-	virtual ~OutputTiler() override;
-	virtual void writeRow(uint8_t * data) override;
-	virtual void finish() override;
-	virtual int getWidth() const override;
-	virtual int getHeight() const override;
+	~OutputTiler() override;
+	void writeRow(uint8_t * data) override;
+	void finish() override;
+	int getWidth() const override;
+	int getHeight() const override;
 
 private:
 	/**

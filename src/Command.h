@@ -12,6 +12,8 @@ namespace po = boost::program_options;
  */
 class Command {
 public:
+	Command();
+
 	/**
 	 * Run the command. argv[0] will be the name of the command, and argv[argc-1]
 	 * will be the last argument.

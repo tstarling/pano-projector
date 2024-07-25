@@ -83,10 +83,10 @@ int PyramidCommand::doRun() {
 		std::cerr << "Error: an input filename and an output directory must be specified.\n";
 		return 1;
 	}
-	CropRect cropRect;
+	CropRect cropRect{};
 	int face;
 	if (m_options.count("face")) {
-		const std::string & faceName = m_options["face"].as<std::string>();
+		auto & faceName = m_options["face"].as<std::string>();
 		face = FaceInfo::getFaceFromName(faceName);
 		if (face == -1) {
 			std::cerr << "Error: invalid face name \"" << faceName << "\", must be one of: ";

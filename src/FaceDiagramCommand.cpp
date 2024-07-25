@@ -5,7 +5,7 @@
 namespace PanoProjector {
 
 int FaceDiagramCommand::doRun() {
-	const std::string & output = m_options["output"].as<std::string>();
+	auto & output = m_options["output"].as<std::string>();
 	int width = m_options["width"].as<int>();
 	width += width % 2;
 
@@ -49,9 +49,9 @@ void FaceDiagramCommand::initOptions() {
 		;
 }
 
-void FaceDiagramCommand::makeFaceDiagramNumerical(std::string outputPath, int width) {
+void FaceDiagramCommand::makeFaceDiagramNumerical(const std::string & outputPath, int width) {
 	int height = width / 2;
-	uint8_t * buffer = new uint8_t[width * height * 3];
+	auto buffer = new uint8_t[width * height * 3];
 
 	for (int face = 0; face < 6; face++) {
 		for (int j = 0; j < 5000; j++) {
@@ -85,7 +85,7 @@ void FaceDiagramCommand::makeFaceDiagramNumerical(std::string outputPath, int wi
 					y = a;
 					z = 1.0f;
 					color = 0xff00ff; // magenta
-				} else if (face==5) {
+				} else /*if (face==5)*/ {
 					x = -b;
 					y = a;
 					z = -1.0f;
@@ -111,9 +111,10 @@ void FaceDiagramCommand::makeFaceDiagramNumerical(std::string outputPath, int wi
 		output.writeRow(buffer + 3 * j * width);
 	}
 	output.finish();
+	delete[] buffer;
 }
 
-void FaceDiagramCommand::makeFaceDiagramAnalytic(std::string outputPath, int width) {
+void FaceDiagramCommand::makeFaceDiagramAnalytic(const std::string & outputPath, int width) {
 	int height = width / 2;
 	float pi4 = M_PI / 4;
 	uint8_t buffer[width * 3];

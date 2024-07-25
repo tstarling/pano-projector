@@ -16,7 +16,8 @@ static int iceil(double arg) {
 InputImage::InputImage(const std::string & path,
 		double relCropLeft, double relCropRight,
 		double relCropTop, double relCropBottom)
-	: m_path(path), m_data(nullptr), m_width(0), m_height(0)
+	: m_path(path), m_data(nullptr), m_width(0), m_height(0),
+	m_cinfo(), m_jerr()
 {
 	FILE * f = fopen(path.c_str(), "rb");
 	if (!f) {

@@ -17,7 +17,7 @@ OutputTiler::OutputTiler(const std::string & prefix, const std::string & suffix,
 	m_prefix(prefix), m_suffix(suffix)
 {}
 
-OutputTiler::OutputTiler(OutputTiler && other)
+OutputTiler::OutputTiler(OutputTiler && other) noexcept
 	: m_width(other.m_width),
 	m_height(other.m_height),
 	m_tileWidth(other.m_tileWidth),
@@ -75,8 +75,8 @@ void OutputTiler::openStrip() {
 }
 
 void OutputTiler::closeStrip() {
-	for (size_t i = 0; i < m_outputs.size(); i++) {
-		m_outputs[i].finish();
+	for (auto & output : m_outputs) {
+		output.finish();
 	}
 	m_outputs.clear();
 }

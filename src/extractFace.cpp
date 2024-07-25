@@ -1,7 +1,5 @@
-#include <math.h>
+#include <cmath>
 #include <stdexcept>
-#include <iostream>
-#include <cassert>
 
 #include "extractFace.h"
 #include "FaceInfo.h"
@@ -25,7 +23,7 @@ static inline float atan_approx(float x) {
 static float atan2f_approx(float y, float x) {
 	const float pi = M_PI;
 	const float pi_2 = M_PI_2;
-	bool swap = fabs(x) < fabs(y);
+	bool swap = std::fabs(x) < std::fabs(y);
 	float atan_input = (swap ? x : y) / (swap ? y : x);
 	float res = atan_approx(atan_input);
 	res = swap ? copysignf(pi_2, atan_input) - res : res;

@@ -21,7 +21,7 @@ endif()
 file(GLOB pano_source_files src/*.cpp)
 add_executable(pano-projector ${pano_source_files})
 
-# Need std::filesystem
+# Need std::filesystem and std::bit_width
 target_compile_features(pano-projector PRIVATE cxx_std_20)
 
 # Tested with 1.74 but probably works with any version

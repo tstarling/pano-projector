@@ -52,7 +52,7 @@ int FaceCommand::doRun() {
 		return 1;
 	}
 
-	const std::string & faceName = m_options["face"].as<std::string>();
+	auto & faceName = m_options["face"].as<std::string>();
 	int face = FaceInfo::getFaceFromName(faceName);
 	if (face == -1) {
 		std::cerr << "Error: invalid face name \"" << faceName << "\", must be one of: ";

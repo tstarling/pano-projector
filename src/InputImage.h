@@ -2,7 +2,7 @@
 #define PANO_INPUT_IMAGE_H
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 #include <jpeglib.h>
 #include <jerror.h>
 #include <cassert>
@@ -22,7 +22,7 @@ public:
 	 * An exception will be thrown if the image does not have 3 channels and
 	 * 8 bits per channel precision.
 	 */
-	InputImage(const std::string & path,
+	explicit InputImage(const std::string & path,
 			double relCropLeft = 0, double relCropRight = 1,
 			double relCropTop = 0, double relCropBottom = 1);
 
@@ -103,7 +103,7 @@ public:
 	/**
 	 * Assert that the coordinates are within bounds.
 	 */
-	void assertBounds(int x, int y) {
+	void assertBounds(int x, int y) const {
 		if (m_wrap) {
 			assert((x >= m_cropLeft && x < m_width)
 				|| (x >= 0 && x < m_cropRight));

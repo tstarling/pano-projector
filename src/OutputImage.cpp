@@ -23,12 +23,10 @@ OutputImage::OutputImage(const std::string & name, int width, int height)
 	jpeg_start_compress(m_cinfo, TRUE);
 }
 
-OutputImage::OutputImage(OutputImage && other)
+OutputImage::OutputImage(OutputImage && other) noexcept
 	: m_file(other.m_file),
 	m_cinfo(other.m_cinfo),
-	m_jerr(other.m_jerr),
-	m_width(other.m_width),
-	m_height(other.m_height)
+	m_jerr(other.m_jerr)
 {
 	other.m_file = nullptr;
 	other.m_cinfo = nullptr;

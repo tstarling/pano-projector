@@ -3,6 +3,10 @@
 
 namespace PanoProjector {
 
+Command::Command()
+	: m_optionsDone(false)
+{}
+
 void Command::usage() {
 	if (!m_optionsDone) {
 		m_optionsDone = true;

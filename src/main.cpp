@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 }
 
 void showCommandUsage(const Command & cmd) {
-	Command & mcmd = const_cast<Command&>(cmd);
+	auto & mcmd = const_cast<Command&>(cmd);
 	std::cerr << "pano-projector " << mcmd.getName() << " -- "
 		<< mcmd.getDescription() << "\n";
 	mcmd.usage();

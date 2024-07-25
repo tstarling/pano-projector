@@ -1,6 +1,5 @@
 #include "OutputPyramid.h"
 
-#include <cstdlib>
 #include <cstring>
 
 namespace PanoProjector {
@@ -26,8 +25,8 @@ OutputPyramid::~OutputPyramid() {
 	delete[] m_savedRows;
 	delete[] m_mixResults;
 
-	for (size_t i = 0; i < m_outputs.size(); i++) {
-		delete m_outputs[i];
+	for (auto & output : m_outputs) {
+		delete output;
 	}
 }
 
@@ -49,7 +48,7 @@ void OutputPyramid::flushRow(int level, uint8_t * data) {
 	m_outputs[level]->writeRow(data);
 }
 
-uint8_t * OutputPyramid::mixRow(int level, uint8_t * data) {
+uint8_t * OutputPyramid::mixRow(int level, const uint8_t * data) {
 	uint8_t * oldData = m_savedRows[level - 1];
 	uint8_t * result = m_mixResults[level];
 	int n = getLevelWidth(level);

@@ -1,6 +1,6 @@
 #ifndef PANO_FACE_INFO_H
 #define PANO_FACE_INFO_H
-#include <math.h>
+#include <cmath>
 #include <string>
 
 namespace PanoProjector {

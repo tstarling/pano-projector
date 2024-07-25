@@ -1,7 +1,6 @@
 #include "FaceInfo.h"
 
-namespace PanoProjector {
-namespace FaceInfo {
+namespace PanoProjector::FaceInfo {
 
 static CropRect g_cropRects[6] = {
 	{ 7./8, 1./8, 1./4, 3./4 },
@@ -22,11 +21,10 @@ static std::string g_names[6] = {
 
 int getFaceFromName(const std::string & name) {
 	for (int face = 0; face < 6; face++) {
-		if (name == getLetter(face)) {
-			return face;
-		} else if (name == getName(face)) {
-			return face;
-		} else if (name == std::to_string(face)) {
+		if (name == getLetter(face)
+			|| name == getName(face)
+			|| name == std::to_string(face)
+		) {
 			return face;
 		}
 	}
@@ -45,4 +43,4 @@ const std::string & getName(int face) {
 	return g_names[face];
 }
 
-}} // namespace
+} // namespace

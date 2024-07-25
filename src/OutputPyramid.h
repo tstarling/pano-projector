@@ -23,12 +23,12 @@ public:
 	/** Not copyable due to custom memory management */
 	OutputPyramid(const OutputPyramid & other) = delete;
 
-	virtual ~OutputPyramid() override;
+	~OutputPyramid() override;
 
-	virtual void writeRow(uint8_t * data) override;
-	virtual void finish() override;
-	virtual int getWidth() const override;
-	virtual int getHeight() const override;
+	void writeRow(uint8_t * data) override;
+	void finish() override;
+	int getWidth() const override;
+	int getHeight() const override;
 
 	/**
 	 * Add an output object which will be used for output at a resolution level.
@@ -60,7 +60,7 @@ private:
 	 * The result will be stored to a temporary buffer and the address of
 	 * that buffer will be returned.
 	 */
-	uint8_t * mixRow(int level, uint8_t * data);
+	uint8_t * mixRow(int level, const uint8_t * data);
 
 	/**
 	 * Save a row of data so that it can be mixed with a subsequent row by

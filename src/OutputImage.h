@@ -2,7 +2,7 @@
 #define PANO_OUTPUT_IMAGE_H
 
 #include <string>
-#include <stdio.h>
+#include <cstdio>
 #include <jpeglib.h>
 #include <jerror.h>
 
@@ -24,19 +24,18 @@ public:
 	OutputImage(const OutputImage & other) = delete;
 
 	/** Can be moved -- allows it to go in a std::vector<> */
-	OutputImage(OutputImage && other);
+	OutputImage(OutputImage && other) noexcept;
 
-	virtual ~OutputImage() override;
-	virtual void writeRow(uint8_t * data) override;
-	virtual void finish() override;
-	virtual int getWidth() const override;
-	virtual int getHeight() const override;
+	~OutputImage() override;
+	void writeRow(uint8_t * data) override;
+	void finish() override;
+	int getWidth() const override;
+	int getHeight() const override;
 
 private:
 	FILE * m_file;
 	struct jpeg_compress_struct * m_cinfo;
 	struct jpeg_error_mgr * m_jerr;
-	int m_width, m_height;
 };
 
 } // namespace
