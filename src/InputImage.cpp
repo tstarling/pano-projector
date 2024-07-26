@@ -18,15 +18,30 @@ InputImage::InputImage(const std::string & path, const CropRect & cropRect)
 	jpeg_create_decompress(&m_cinfo);
 	jpeg_stdio_src(&m_cinfo, f);
 
+	// Save the ICC profile while reading the header
+	jpeg_save_markers(&m_cinfo, JPEG_APP0 + 2, 0xFFFF);
 	(void)jpeg_read_header(&m_cinfo, TRUE);
-	(void)jpeg_start_decompress(&m_cinfo);
 
-	if (m_cinfo.output_components != 3) {
+	// Read the ICC profile
+	JOCTET * iccData;
+	unsigned int iccDataLength;
+	if (jpeg_read_icc_profile(&m_cinfo, &iccData, &iccDataLength)) {
+		m_metadata.icc = std::string(
+			reinterpret_cast<char*>(iccData),
+			iccDataLength);
+		free(iccData);
+	}
+
+	// The YCbCr -> RGB converter is actually faster than the "null" converter,
+	// so it doesn't help to use the input color space here
+	m_cinfo.out_color_space = JCS_RGB;
+
+	if (m_cinfo.num_components != COMPONENTS) {
 		throw std::runtime_error("Invalid input image: wrong number of components");
 	}
-	if (m_cinfo.data_precision != 8) {
-		throw std::runtime_error("Invalid input image: wrong data precision");
-	}
+
+	(void)jpeg_start_decompress(&m_cinfo);
+
 	m_width = m_cinfo.output_width;
 	m_height = m_cinfo.output_height;
 
@@ -51,7 +66,7 @@ InputImage::InputImage(const std::string & path, const CropRect & cropRect)
 		throw std::runtime_error("Invalid cropped width");
 	}
 
-	m_data = new uint8_t[3 * m_crop.width * m_crop.height];
+	m_data = new uint8_t[COMPONENTS * m_crop.width * m_crop.height];
 
 	if ((int)sourceCropWidth < m_width) {
 		jpeg_crop_scanline(&m_cinfo, &sourceCropLeft, &sourceCropWidth);
@@ -61,11 +76,11 @@ InputImage::InputImage(const std::string & path, const CropRect & cropRect)
 	}
 
 	if (m_crop.wrap) {
-		uint8_t buffer[m_width * 3];
+		uint8_t buffer[m_width * COMPONENTS];
 		uint8_t *bufPtr = buffer;
-		int leftOffset = 3 * m_crop.left;
-		int leftSize = 3 * (m_width - m_crop.left);
-		int rightSize = 3 * m_crop.right;
+		int leftOffset = COMPONENTS * m_crop.left;
+		int leftSize = COMPONENTS * (m_width - m_crop.left);
+		int rightSize = COMPONENTS * m_crop.right;
 		while ((int)m_cinfo.output_scanline < m_crop.bottom) {
 			int j = m_cinfo.output_scanline;
 			(void)jpeg_read_scanlines(&m_cinfo, &bufPtr, 1);
@@ -73,12 +88,12 @@ InputImage::InputImage(const std::string & path, const CropRect & cropRect)
 			memcpy(pixel(0, j), buffer, rightSize);
 		}
 	} else if (m_crop.width < (int)sourceCropWidth) {
-		uint8_t buffer[sourceCropWidth * 3];
+		uint8_t buffer[sourceCropWidth * COMPONENTS];
 		uint8_t *bufPtr = buffer;
 		while ((int)m_cinfo.output_scanline < m_crop.bottom) {
 			int j = m_cinfo.output_scanline;
 			(void)jpeg_read_scanlines(&m_cinfo, &bufPtr, 1);
-			memcpy(row(j), buffer + 3 * (m_crop.left - sourceCropLeft), 3 * m_crop.width);
+			memcpy(row(j), buffer + COMPONENTS * (m_crop.left - sourceCropLeft), COMPONENTS * m_crop.width);
 		}
 	} else {
 		while ((int)m_cinfo.output_scanline < m_crop.bottom) {

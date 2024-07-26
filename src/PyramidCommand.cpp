@@ -38,6 +38,8 @@ void PyramidCommand::initOptions() {
 		 	"Which face to extract")
 		("levels", po::value<int>(),
 			"The number of resolution levels (default: last level has a single tile)")
+		("copy-icc", po::bool_switch(),
+		 	"Copy the ICC color profile")
 		;
 
 	m_invisible.add_options()
@@ -71,7 +73,8 @@ static void doFace(
 			levelDir / FaceInfo::getLetter(face),
 			".jpg",
 			levelSize, levelSize,
-			tileSize, tileSize));
+			tileSize, tileSize,
+			input.getMetadata()));
 		levelSize /= 2;
 	}
 

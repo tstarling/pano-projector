@@ -7,6 +7,7 @@
 #include <jerror.h>
 
 #include "OutputBase.h"
+#include "Metadata.h"
 
 namespace PanoProjector {
 
@@ -18,7 +19,7 @@ public:
 	/**
 	 * Open the file and begin the JPEG compression
 	 */
-	OutputImage(const std::string & name, int width, int height);
+	OutputImage(const std::string & name, int width, int height, const Metadata & metadata);
 
 	/** Not copyable due to resource and memory ownership */
 	OutputImage(const OutputImage & other) = delete;

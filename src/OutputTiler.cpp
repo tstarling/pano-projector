@@ -7,24 +7,27 @@ namespace PanoProjector {
 using std::to_string;
 
 OutputTiler::OutputTiler(const std::string & prefix, const std::string & suffix,
-	int width, int height, int tileWidth, int tileHeight
+	int width, int height, int tileWidth, int tileHeight,
+	const Metadata & metadata
 )
 	: m_width(width), m_height(height),
-	m_tileWidth(tileWidth), m_tileHeight(tileHeight),
-	m_numTilesWide(width / tileWidth + (width % tileWidth ? 1 : 0)),
-	m_numTilesHigh(height / tileHeight + (height % tileHeight ? 1 : 0)),
-	m_rowIndex(0),
-	m_prefix(prefix), m_suffix(suffix)
+	  m_tileWidth(tileWidth), m_tileHeight(tileHeight),
+	  m_metadata(metadata),
+	  m_numTilesWide(width / tileWidth + (width % tileWidth ? 1 : 0)),
+	  m_numTilesHigh(height / tileHeight + (height % tileHeight ? 1 : 0)),
+	  m_rowIndex(0),
+	  m_prefix(prefix), m_suffix(suffix)
 {}
 
 OutputTiler::OutputTiler(OutputTiler && other) noexcept
 	: m_width(other.m_width),
-	m_height(other.m_height),
-	m_tileWidth(other.m_tileWidth),
-	m_tileHeight(other.m_tileHeight),
-	m_numTilesWide(other.m_numTilesWide),
-	m_numTilesHigh(other.m_numTilesHigh),
-	m_rowIndex(other.m_rowIndex)
+	  m_height(other.m_height),
+	  m_tileWidth(other.m_tileWidth),
+	  m_tileHeight(other.m_tileHeight),
+	  m_metadata(other.m_metadata),
+	  m_numTilesWide(other.m_numTilesWide),
+	  m_numTilesHigh(other.m_numTilesHigh),
+	  m_rowIndex(other.m_rowIndex)
 {
 	m_prefix.swap(other.m_prefix);
 	m_suffix.swap(other.m_suffix);
@@ -70,7 +73,7 @@ void OutputTiler::openStrip() {
 		} else {
 			tileHeight = m_tileHeight;
 		}
-		m_outputs.emplace_back(path, tileWidth, tileHeight);
+		m_outputs.emplace_back(path, tileWidth, tileHeight, m_metadata);
 	}
 }
 

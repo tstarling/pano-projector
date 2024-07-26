@@ -24,7 +24,8 @@ public:
 	 * Pannellum.
 	 */
 	OutputTiler(const std::string & prefix, const std::string & suffix,
-		int width, int height, int tileWidth, int tileHeight);
+		int width, int height, int tileWidth, int tileHeight,
+		const Metadata & metadata);
 
 	/** Not copyable because OutputImage is not copyable */
 	OutputTiler(const OutputTiler & other) = delete;
@@ -59,6 +60,8 @@ private:
 	void closeStrip();
 
 	int m_width, m_height, m_tileWidth, m_tileHeight;
+
+	const Metadata m_metadata;
 
 	/** The number of tiles in the horizontal direction */
 	int m_numTilesWide;

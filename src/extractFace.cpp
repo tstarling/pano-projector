@@ -53,7 +53,7 @@ void extractFaceTpl(InputImage & input, OutputBase & output) {
 	const float pi_2 = M_PI_2;
 	const float pi_x2 = M_PI * 2;
 
-	uint8_t buffer[destWidth * 3];
+	uint8_t buffer[destWidth * COMPONENTS];
 
 	// Cartesian coords on the 2x2x2 cube |x|<=1, |y|<=1, |z|<=1
 	float x = 0, y = 0, z = 0;
@@ -72,14 +72,14 @@ void extractFaceTpl(InputImage & input, OutputBase & output) {
 			// Source image coords
 			float uf = (theta + pi) / pi_x2 * (srcWidth - 1);
 			float vf = (pi_2 - phi) / pi * (srcHeight - 1);
-			input.interpolate(&buffer[3 * i], uf, vf);
+			input.interpolate(&buffer[COMPONENTS * i], uf, vf);
 
 			// Reflect the horizontal destination coordinate and repeat
 			int ii = destWidth - i - 1;
 			// Reflecting i does not change phi, we only have to reflect theta
 			FaceInfo::reflectTheta<face>(theta);
 			uf = (theta + pi) / pi_x2 * (srcWidth - 1);
-			input.interpolate(&buffer[3 * ii], uf, vf);
+			input.interpolate(&buffer[COMPONENTS * ii], uf, vf);
 		}
 		output.writeRow(buffer);
 	}

@@ -3,7 +3,7 @@
 
 namespace PanoProjector {
 
-OutputImage::OutputImage(const std::string & name, int width, int height)
+OutputImage::OutputImage(const std::string & name, int width, int height, const Metadata & metadata)
 {
 	m_file = fopen(name.c_str(), "wb");
 	if (m_file == nullptr) {
@@ -14,13 +14,20 @@ OutputImage::OutputImage(const std::string & name, int width, int height)
 	m_cinfo->err = jpeg_std_error(m_jerr);
 	jpeg_create_compress(m_cinfo);
 	jpeg_stdio_dest(m_cinfo, m_file);
+	m_cinfo->in_color_space = JCS_RGB;
+	jpeg_set_defaults(m_cinfo);
 	m_cinfo->image_width = width;
 	m_cinfo->image_height = height;
-	m_cinfo->input_components = 3;
-	m_cinfo->in_color_space = JCS_RGB;
+	m_cinfo->input_components = COMPONENTS;
 	m_cinfo->data_precision = 8;
-	jpeg_set_defaults(m_cinfo);
 	jpeg_start_compress(m_cinfo, TRUE);
+
+	if (!metadata.icc.empty()) {
+		jpeg_write_icc_profile(
+			m_cinfo,
+			reinterpret_cast<const JOCTET*>(metadata.icc.data()),
+			static_cast<unsigned int>(metadata.icc.length()));
+	}
 }
 
 OutputImage::OutputImage(OutputImage && other) noexcept

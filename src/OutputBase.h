@@ -14,8 +14,8 @@ public:
 	virtual ~OutputBase() = 0;
 
 	/**
-	 * Write a row (scanline) of image data. The data must have 3 channels in
-	 * RGB format with the width as specified in the OutputImage constructor.
+	 * Write a row (scanline) of image data. The size of the data array must be
+	 * the width multiplied by the number of channels.
 	 */
 	virtual void writeRow(uint8_t * data) = 0;
 

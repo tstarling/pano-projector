@@ -9,6 +9,7 @@
 #include <cmath>
 #include "CropRect.h"
 #include "IntegerCropRect.h"
+#include "Metadata.h"
 
 namespace PanoProjector {
 
@@ -20,9 +21,6 @@ public:
 	/**
 	 * Read a JPEG image from a file to a managed buffer. If a crop rectangle
 	 * is given, only the data within that rectangle will be stored.
-	 *
-	 * An exception will be thrown if the image does not have 3 channels and
-	 * 8 bits per channel precision.
 	 */
 	explicit InputImage(const std::string & path, const CropRect & cropRect);
 
@@ -40,6 +38,11 @@ public:
 		return m_height;
 	}
 
+	/** Get metadata from the image file */
+	const Metadata & getMetadata() const {
+		return m_metadata;
+	}
+
 	/**
 	 * Get the data of the given image row (scanline).
 	 *
@@ -49,7 +52,7 @@ public:
 	uint8_t * row(int row) {
 		assert(row >= m_crop.top);
 		assert(row < m_crop.bottom);
-		return m_data + (row - m_crop.top) * m_crop.width * 3;
+		return m_data + (row - m_crop.top) * m_crop.width * COMPONENTS;
 	}
 
 	/**
@@ -64,7 +67,7 @@ public:
 		if (colOffset < 0) {
 			colOffset += m_width;
 		}
-		return m_data + ((row - m_crop.top) * m_crop.width + colOffset) * 3;
+		return m_data + ((row - m_crop.top) * m_crop.width + colOffset) * COMPONENTS;
 	}
 
 	/**
@@ -85,7 +88,7 @@ public:
 	/**
 	 * Given image coordinates in units of pixels, perform a bilinear
 	 * interpolation between the four nearest neighbours and write an
-	 * interpolated RGB value to the given destination buffer.
+	 * interpolated value to the given destination buffer.
 	 *
 	 * The coordinates must be within the crop rectangle, otherwise it will
 	 * segfault or do some other undefined but probably undesired thing.
@@ -99,6 +102,7 @@ private:
 	IntegerCropRect m_crop;
 	struct jpeg_decompress_struct m_cinfo;
 	struct jpeg_error_mgr m_jerr;
+	Metadata m_metadata;
 };
 
 #if 0 && use_float
@@ -121,7 +125,7 @@ void InputImage::interpolate(uint8_t * dest, float x, float y) {
 		*f10 = (*this)(x1, y0),
 		*f11 = (*this)(x1, y1);
 
-	for (int c = 0; c < 3; c++) {
+	for (int c = 0; c < COMPONENTS; c++) {
 		float v = f00[c];
 		v = fmaf(f10[c] - f00[c], mu, v);
 		v = fmaf(f01[c] - f00[c], nu, v);
@@ -173,7 +177,7 @@ void InputImage::interpolate(uint8_t * dest, float x, float y) {
 
 	v4u1 res1 = __builtin_convertvector(res, v4u1);
 
-	for (int c = 0; c < 3; c++) {
+	for (int c = 0; c < COMPONENTS; c++) {
 		dest[c] = res1[c];
 	}
 }
@@ -201,12 +205,12 @@ void InputImage::interpolate(uint8_t * dest, float x, float y) {
 		*f10 = pixel(x1, y0),
 		*f11 = pixel(x1, y1);
 
-	for (int c = 0; c < 3; c++) {
+	for (int c = 0; c < COMPONENTS; c++) {
 		int v =
 			scale * f00[c]
-			+ mu * (f10[c] - f00[c])
-			+ nu * (f01[c] - f00[c])
-			+ munu * (f11[c] - f10[c] - f01[c] + f00[c]);
+				+ mu * (f10[c] - f00[c])
+				+ nu * (f01[c] - f00[c])
+				+ munu * (f11[c] - f10[c] - f01[c] + f00[c]);
 		dest[c] = static_cast<uint8_t>(v / scale);
 	}
 }

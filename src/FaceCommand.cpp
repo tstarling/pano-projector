@@ -17,6 +17,8 @@ void FaceCommand::initOptions() {
 			"The output image width and height (default: full resolution)")
 		("face", po::value<std::string>(),
 		 	"Which face to extract")
+		("copy-icc", po::bool_switch(),
+			"Copy the ICC color profile")
 		;
 
 	m_invisible.add_options()
@@ -82,7 +84,12 @@ int FaceCommand::doRun() {
 		size = 8 * (int)(input.getWidth() / M_PI / 8);
 	}
 
-	OutputImage output(m_options["output"].as<std::string>(), size, size);
+	Metadata meta = input.getMetadata();
+	if (!m_options.contains("copy-icc")) {
+		meta.icc.clear();
+	}
+
+	OutputImage output(m_options["output"].as<std::string>(), size, size, meta);
 
 	extractFace(face, input, output);
 	return 0;

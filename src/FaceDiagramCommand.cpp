@@ -106,7 +106,7 @@ void FaceDiagramCommand::makeFaceDiagramNumerical(const std::string & outputPath
 			}
 		}
 	}
-	OutputImage output(outputPath, width, height);
+	OutputImage output(outputPath, width, height, Metadata());
 	for (int j = 0; j < height; j++) {
 		output.writeRow(buffer + 3 * j * width);
 	}
@@ -119,7 +119,7 @@ void FaceDiagramCommand::makeFaceDiagramAnalytic(const std::string & outputPath,
 	float pi4 = M_PI / 4;
 	uint8_t buffer[width * 3];
 	uint32_t color;
-	OutputImage output(outputPath, width, height);
+	OutputImage output(outputPath, width, height, Metadata());
 
 	for (int v = 0; v < height; v++) {
 		for (int u = 0; u < width; u++) {
