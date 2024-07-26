@@ -70,13 +70,7 @@ int FaceCommand::doRun() {
 	}
 
 	const CropRect cropRect = FaceInfo::getCropRect(face);
-	InputImage input(
-		m_options["input"].as<std::string>(),
-		cropRect.left,
-		cropRect.right,
-		cropRect.top,
-		cropRect.bottom
-	);
+	InputImage input(m_options["input"].as<std::string>(), cropRect);
 
 	if (input.getWidth() != input.getHeight() * 2) {
 		std::cerr << "Input image has incorrect aspect ratio, must be 2:1.\n";

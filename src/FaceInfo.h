@@ -2,20 +2,12 @@
 #define PANO_FACE_INFO_H
 #include <cmath>
 #include <string>
-
-namespace PanoProjector {
-
-struct CropRect {
-	double left;
-	double right;
-	double top;
-	double bottom;
-};
+#include "CropRect.h"
 
 /**
  * Functions giving information about cube faces
  */
-namespace FaceInfo {
+namespace PanoProjector::FaceInfo {
 
 /**
  * Set the invariant cartesian coordinate for this cube face.
@@ -109,6 +101,6 @@ template<> void reflectTheta<5>(float & theta)                        { theta = 
 
 #pragma GCC diagnostic pop
 
-} // namespace FaceInfo
-} // namespace PanoProjector
+} // namespace
+
 #endif

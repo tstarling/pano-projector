@@ -7,6 +7,8 @@
 #include <jerror.h>
 #include <cassert>
 #include <cmath>
+#include "CropRect.h"
+#include "IntegerCropRect.h"
 
 namespace PanoProjector {
 
@@ -22,9 +24,7 @@ public:
 	 * An exception will be thrown if the image does not have 3 channels and
 	 * 8 bits per channel precision.
 	 */
-	explicit InputImage(const std::string & path,
-			double relCropLeft = 0, double relCropRight = 1,
-			double relCropTop = 0, double relCropBottom = 1);
+	explicit InputImage(const std::string & path, const CropRect & cropRect);
 
 	InputImage(const InputImage & other) = delete;
 
@@ -41,48 +41,15 @@ public:
 	}
 
 	/**
-	 * Get the left coordinate of the crop rectangle.
-	 *
-	 * If this is greater than the right coordinate, the crop region is assumed
-	 * to wrap around, being split between the far left and far right of the image.
-	 */
-	int getCropLeft() const {
-		return m_cropLeft;
-	}
-
-	/**
-	 * Get the past-the-end right coordinate of the crop rectangle, that is, the
-	 * maximum x coordinate plus one.
-	 */
-	int getCropRight() const {
-		return m_cropRight;
-	}
-
-	/**
-	 * Get the top coordinate of the crop rectangle.
-	 */
-	int getCropTop() const {
-		return m_cropTop;
-	}
-
-	/**
-	 * Get the past-the-end bottom coordinate of the crop rectangle, that is,
-	 * the maximum y coordinate plus one.
-	 */
-	int getCropBottom() const {
-		return m_cropBottom;
-	}
-
-	/**
 	 * Get the data of the given image row (scanline).
 	 *
 	 * The row must be within the crop region. Assertions are disabled by default
 	 * so it will probably crash or execute arbitrary code if you get it wrong.
 	 */
 	uint8_t * row(int row) {
-		assert(row >= m_cropTop);
-		assert(row < m_cropBottom);
-		return m_data + (row - m_cropTop) * m_cropWidth * 3;
+		assert(row >= m_crop.top);
+		assert(row < m_crop.bottom);
+		return m_data + (row - m_crop.top) * m_crop.width * 3;
 	}
 
 	/**
@@ -93,26 +60,26 @@ public:
 	 */
 	uint8_t * pixel(int col, int row) {
 		assertBounds(col, row);
-		int colOffset = col - m_cropLeft;
+		int colOffset = col - m_crop.left;
 		if (colOffset < 0) {
 			colOffset += m_width;
 		}
-		return m_data + ((row - m_cropTop) * m_cropWidth + colOffset) * 3;
+		return m_data + ((row - m_crop.top) * m_crop.width + colOffset) * 3;
 	}
 
 	/**
 	 * Assert that the coordinates are within bounds.
 	 */
 	void assertBounds(int x, int y) const {
-		if (m_wrap) {
-			assert((x >= m_cropLeft && x < m_width)
-				|| (x >= 0 && x < m_cropRight));
+		if (m_crop.wrap) {
+			assert((x >= m_crop.left && x < m_width)
+				|| (x >= 0 && x < m_crop.right));
 		} else {
-			assert(x >= m_cropLeft);
-			assert(x < m_cropRight);
+			assert(x >= m_crop.left);
+			assert(x < m_crop.right);
 		}
-		assert(y >= m_cropTop);
-		assert(y < m_cropBottom);
+		assert(y >= m_crop.top);
+		assert(y < m_crop.bottom);
 	}
 
 	/**
@@ -129,10 +96,7 @@ private:
 	std::string m_path;
 	uint8_t * m_data;
 	int m_width, m_height;
-	int m_cropLeft, m_cropRight;
-	int m_cropTop, m_cropBottom;
-	int m_cropWidth, m_cropHeight;
-	bool m_wrap;
+	IntegerCropRect m_crop;
 	struct jpeg_decompress_struct m_cinfo;
 	struct jpeg_error_mgr m_jerr;
 };
