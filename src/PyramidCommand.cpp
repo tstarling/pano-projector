@@ -38,6 +38,8 @@ void PyramidCommand::initOptions() {
 		 	"Which face to extract")
 		("levels", po::value<int>(),
 			"The number of resolution levels (default: last level has a single tile)")
+		("quality", po::value<int>()->default_value(80),
+			"The encoder quality, as a percentage")
 		("copy-icc", po::bool_switch(),
 		 	"Copy the ICC color profile")
 		;
@@ -59,7 +61,8 @@ static void doFace(
 	const fs::path & outDir,
 	int levels,
 	int cubeSize,
-	int tileSize
+	int tileSize,
+	const EncoderOptions & options
 ) {
 	OutputPyramid pyramid(levels, cubeSize, cubeSize);
 
@@ -74,7 +77,8 @@ static void doFace(
 			".jpg",
 			levelSize, levelSize,
 			tileSize, tileSize,
-			input.getMetadata()));
+			input.getMetadata(),
+			options));
 		levelSize /= 2;
 	}
 
@@ -146,12 +150,15 @@ int PyramidCommand::doRun() {
 		fs::create_directory(outDir);
 	}
 
+	EncoderOptions encoderOptions;
+	encoderOptions.quality = m_options["quality"].as<int>();
+
 	if (face == -1) {
 		for (face = 0; face < 6; face++) {
-			doFace(face, input, outDir, levels, cubeSize, tileSize);
+			doFace(face, input, outDir, levels, cubeSize, tileSize, encoderOptions);
 		}
 	} else {
-		doFace(face, input, outDir, levels, cubeSize, tileSize);
+		doFace(face, input, outDir, levels, cubeSize, tileSize, encoderOptions);
 	}
 	return 0;
 }

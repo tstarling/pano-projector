@@ -17,6 +17,8 @@ void FaceCommand::initOptions() {
 			"The output image width and height (default: full resolution)")
 		("face", po::value<std::string>(),
 		 	"Which face to extract")
+		("quality", po::value<int>()->default_value(80),
+			"The encoder quality, as a percentage")
 		("copy-icc", po::bool_switch(),
 			"Copy the ICC color profile")
 		;
@@ -71,6 +73,9 @@ int FaceCommand::doRun() {
 		return 1;
 	}
 
+	EncoderOptions encoderOptions;
+	encoderOptions.quality = m_options["quality"].as<int>();
+
 	const CropRect cropRect = FaceInfo::getCropRect(face);
 	InputImage input(m_options["input"].as<std::string>(), cropRect);
 
@@ -89,7 +94,7 @@ int FaceCommand::doRun() {
 		meta.icc.clear();
 	}
 
-	OutputImage output(m_options["output"].as<std::string>(), size, size, meta);
+	OutputImage output(m_options["output"].as<std::string>(), size, size, meta, encoderOptions);
 
 	extractFace(face, input, output);
 	return 0;

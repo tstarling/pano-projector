@@ -3,7 +3,8 @@
 
 namespace PanoProjector {
 
-OutputImage::OutputImage(const std::string & name, int width, int height, const Metadata & metadata)
+OutputImage::OutputImage(const std::string & name, int width, int height,
+	const Metadata & metadata, const EncoderOptions & options)
 {
 	m_file = fopen(name.c_str(), "wb");
 	if (m_file == nullptr) {
@@ -16,6 +17,7 @@ OutputImage::OutputImage(const std::string & name, int width, int height, const 
 	jpeg_stdio_dest(m_cinfo, m_file);
 	m_cinfo->in_color_space = JCS_RGB;
 	jpeg_set_defaults(m_cinfo);
+	jpeg_set_quality(m_cinfo, options.quality, FALSE);
 	m_cinfo->image_width = width;
 	m_cinfo->image_height = height;
 	m_cinfo->input_components = COMPONENTS;

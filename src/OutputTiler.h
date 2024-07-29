@@ -25,7 +25,7 @@ public:
 	 */
 	OutputTiler(const std::string & prefix, const std::string & suffix,
 		int width, int height, int tileWidth, int tileHeight,
-		const Metadata & metadata);
+		const Metadata & metadata, const EncoderOptions & options);
 
 	/** Not copyable because OutputImage is not copyable */
 	OutputTiler(const OutputTiler & other) = delete;
@@ -62,6 +62,7 @@ private:
 	int m_width, m_height, m_tileWidth, m_tileHeight;
 
 	const Metadata m_metadata;
+	const EncoderOptions m_options;
 
 	/** The number of tiles in the horizontal direction */
 	int m_numTilesWide;

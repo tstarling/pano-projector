@@ -8,11 +8,11 @@ using std::to_string;
 
 OutputTiler::OutputTiler(const std::string & prefix, const std::string & suffix,
 	int width, int height, int tileWidth, int tileHeight,
-	const Metadata & metadata
+	const Metadata & metadata, const EncoderOptions & options
 )
 	: m_width(width), m_height(height),
 	  m_tileWidth(tileWidth), m_tileHeight(tileHeight),
-	  m_metadata(metadata),
+	  m_metadata(metadata), m_options(options),
 	  m_numTilesWide(width / tileWidth + (width % tileWidth ? 1 : 0)),
 	  m_numTilesHigh(height / tileHeight + (height % tileHeight ? 1 : 0)),
 	  m_rowIndex(0),
@@ -73,7 +73,7 @@ void OutputTiler::openStrip() {
 		} else {
 			tileHeight = m_tileHeight;
 		}
-		m_outputs.emplace_back(path, tileWidth, tileHeight, m_metadata);
+		m_outputs.emplace_back(path, tileWidth, tileHeight, m_metadata, m_options);
 	}
 }
 
