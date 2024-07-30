@@ -31,6 +31,10 @@ void PyramidCommand::initOptions() {
 	m_visible.add_options()
 		("help",
 		 	"Show help message and exit")
+		("input-format", po::value<std::string>()->default_value(""),
+			"The format of the input image. If unspecified, use the file extension")
+		("output-format", po::value<std::string>()->default_value(""),
+			"The format of the output image. If unspecified, use the file extension")
 		("cube-size", po::value<int>(),
 			"The output image width and height (default: full resolution)")
 		("tile-size", po::value<int>()->default_value(512),
@@ -122,9 +126,13 @@ int PyramidCommand::doRun() {
 		face = -1;
 	}
 
-	InputImage input(m_options["input"].as<std::string>(), cropRect);
+	std::unique_ptr<InputImage> input(InputImageFactory::create(
+		m_options["input"].as<std::string>(),
+		m_options["input-format"].as<std::string>(),
+		cropRect
+	));
 
-	if (input.getWidth() != input.getHeight() * 2) {
+	if (input->getWidth() != input->getHeight() * 2) {
 		std::cerr << "Input image has incorrect aspect ratio, must be 2:1.\n";
 		return 1;
 	}
@@ -133,7 +141,7 @@ int PyramidCommand::doRun() {
 	if (m_options.count("cube-size")) {
 		cubeSize = m_options["cube-size"].as<int>();
 	} else {
-		cubeSize = 8 * (int)(input.getWidth() / M_PI / 8);
+		cubeSize = 8 * (int)(input->getWidth() / M_PI / 8);
 	}
 
 	int tileSize = m_options["tile-size"].as<int>();
@@ -161,10 +169,10 @@ int PyramidCommand::doRun() {
 
 	if (face == -1) {
 		for (face = 0; face < 6; face++) {
-			doFace(face, input, outDir, levels, cubeSize, tileSize, encoderOptions);
+			doFace(face, *input, outDir, levels, cubeSize, tileSize, encoderOptions);
 		}
 	} else {
-		doFace(face, input, outDir, levels, cubeSize, tileSize, encoderOptions);
+		doFace(face, *input, outDir, levels, cubeSize, tileSize, encoderOptions);
 	}
 	return 0;
 }

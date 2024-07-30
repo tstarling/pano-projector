@@ -14,19 +14,20 @@
 namespace PanoProjector {
 
 /**
- * A JPEG input image
+ * The input image base class.
+ *
+ * The buffer format is shared between subclasses. The methods to access it
+ * are non-virtual. However, the memory is managed by the subclass, in case
+ * codec libraries want to allocate their own memory.
  */
 class InputImage {
-public:
-	/**
-	 * Read a JPEG image from a file to a managed buffer. If a crop rectangle
-	 * is given, only the data within that rectangle will be stored.
-	 */
-	explicit InputImage(const std::string & path, const CropRect & cropRect);
+protected:
+	InputImage();
 
+public:
 	InputImage(const InputImage & other) = delete;
 
-	~InputImage();
+	virtual ~InputImage() = 0;
 
 	/** Get the image width */
 	int getWidth() const {
@@ -95,13 +96,10 @@ public:
 	 */
 	inline void interpolate(uint8_t * dest, float x, float y);
 
-private:
-	std::string m_path;
+protected:
 	uint8_t * m_data;
 	int m_width, m_height;
 	IntegerCropRect m_crop;
-	struct jpeg_decompress_struct m_cinfo;
-	struct jpeg_error_mgr m_jerr;
 	Metadata m_metadata;
 };
 

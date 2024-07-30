@@ -2,6 +2,7 @@
 #define PANO_COMMAND_H
 
 #include <boost/program_options.hpp>
+#include "InputImageFactory.h"
 
 namespace PanoProjector {
 

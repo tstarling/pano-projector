@@ -13,6 +13,10 @@ void FaceCommand::initOptions() {
 	m_visible.add_options()
 		("help",
 		 	"Show help message and exit")
+		("input-format", po::value<std::string>()->default_value(""),
+			"The format of the input image. If unspecified, use the file extension")
+		("output-format", po::value<std::string>()->default_value(""),
+			"The format of the output image. If unspecified, use the file extension")
 		("size", po::value<int>()->default_value(0),
 			"The output image width and height (default: full resolution)")
 		("mem-limit", po::value<unsigned long>(),
@@ -80,27 +84,42 @@ int FaceCommand::doRun() {
 	EncoderOptions encoderOptions;
 	encoderOptions.quality = m_options["quality"].as<int>();
 
-	const CropRect cropRect = FaceInfo::getCropRect(face);
-	InputImage input(m_options["input"].as<std::string>(), cropRect);
+	std::string outputPath = m_options["output"].as<std::string>();
+	std::string outputFormat = InputImageFactory::normalizeFormat(
+		outputPath,
+		m_options["output-format"].as<std::string>());
+	if (outputFormat != "jpeg")
+	{
+		std::cerr << "Error: for forwards compatibility, the output file format must be "
+			<< "specified as JPEG, either by the file extension or with --output-format\n";
+		return 1;
+	}
 
-	if (input.getWidth() != input.getHeight() * 2) {
+	const CropRect cropRect = FaceInfo::getCropRect(face);
+	std::unique_ptr<InputImage> input(InputImageFactory::create(
+		m_options["input"].as<std::string>(),
+		m_options["input-format"].as<std::string>(),
+		cropRect
+	));
+
+	if (input->getWidth() != input->getHeight() * 2) {
 		std::cerr << "Input image has incorrect aspect ratio, must be 2:1.\n";
 		return 1;
 	}
 
 	int size = m_options["size"].as<int>();
 	if (size <= 0) {
-		size = 8 * (int)(input.getWidth() / M_PI / 8);
+		size = 8 * (int)(input->getWidth() / M_PI / 8);
 	}
 
-	Metadata meta = input.getMetadata();
+	Metadata meta;
 	if (!m_options.contains("copy-icc")) {
-		meta.icc.clear();
+		meta.icc = input->getMetadata().icc;
 	}
 
-	OutputImage output(m_options["output"].as<std::string>(), size, size, meta, encoderOptions);
+	OutputImage output(outputPath, size, size, meta, encoderOptions);
 
-	extractFace(face, input, output);
+	extractFace(face, *input, output);
 	return 0;
 }
 

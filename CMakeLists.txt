@@ -25,6 +25,8 @@ add_executable(pano-projector
 		src/FaceDiagramCommand.cpp
 		src/FaceInfo.cpp
 		src/InputImage.cpp
+		src/InputImageFactory.cpp
+		src/InputJpeg.cpp
 		src/IntegerCropRect.cpp
 		src/main.cpp
 		src/MemoryBudget.cpp
