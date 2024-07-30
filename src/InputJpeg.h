@@ -18,6 +18,7 @@ public:
 private:
 	struct jpeg_decompress_struct m_cinfo;
 	struct jpeg_error_mgr m_jerr;
+	unsigned long m_extraMem;
 };
 
 } // namespace

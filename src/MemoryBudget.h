@@ -3,13 +3,38 @@
 
 namespace PanoProjector {
 
+/**
+ * Memory accounting
+ *
+ * Currently we are only accounting for memory which is proportional to the
+ * image area. Memory which is proportional to the width is considered to be
+ * insignificant.
+ */
 class MemoryBudget {
 public:
 	MemoryBudget();
 
+	/**
+	 * Set the memory limit
+	 */
 	void setLimit(unsigned long limit);
-	void reserve(unsigned long x, unsigned long y = 1, unsigned long z = 1);
+
+	/**
+	 * Reserve an amount of memory specified in bytes by multiplying up to
+	 * three numbers, with integer overflow protection. If the limit is
+	 * exceeded, throw an error.
+	 */
+	unsigned long reserve(unsigned long x, unsigned long y = 1, unsigned long z = 1);
+
+	/**
+	 * Release previously reserved memory.
+	 */
 	void release(unsigned long x, unsigned long y = 1, unsigned long z = 1) noexcept;
+
+	/**
+	 * Get current accounted memory usage
+	 */
+	unsigned long getUsage() const { return m_usage; }
 
 private:
 	void throwError(unsigned long x, unsigned long y, unsigned long z) const;

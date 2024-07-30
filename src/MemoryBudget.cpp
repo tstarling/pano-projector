@@ -15,7 +15,7 @@ void MemoryBudget::setLimit(unsigned long limit) {
 	m_limit = limit;
 }
 
-void MemoryBudget::reserve(unsigned long x, unsigned long y, unsigned long z) {
+unsigned long MemoryBudget::reserve(unsigned long x, unsigned long y, unsigned long z) {
 	unsigned long increment, newUsage;
 	if (__builtin_umull_overflow(x, y, &increment)) {
 		// Integer overflow
@@ -34,6 +34,7 @@ void MemoryBudget::reserve(unsigned long x, unsigned long y, unsigned long z) {
 		throwError(x, y, z);
 	}
 	m_usage = newUsage;
+	return increment;
 }
 
 void MemoryBudget::release(unsigned long x, unsigned long y, unsigned long z) noexcept {
