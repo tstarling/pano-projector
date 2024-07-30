@@ -62,6 +62,8 @@ when the user requests them.
 PanoProjector is written in C++ and requires C++20. It uses a CMake build
 system. It depends on libjpeg and Boost program_options.
 
+It makes use of extensions to C++ which are available in both GCC and Clang.
+
 When it is compiled for an x86-64 architecture, the default build options
 require a processor equivalent to Intel Skylake or later.
 

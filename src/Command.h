@@ -50,6 +50,11 @@ protected:
 	 */
 	virtual int doRun() = 0;
 
+	/**
+	 * Set the memory limit from the mem-limit command line option
+	 */
+	void setMemoryLimit();
+
 	po::options_description m_visible;
 	po::options_description m_invisible;
 	po::positional_options_description m_pos;

@@ -18,8 +18,22 @@ if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
 	add_compile_options(-march=skylake)
 endif()
 
-file(GLOB pano_source_files src/*.cpp)
-add_executable(pano-projector ${pano_source_files})
+add_executable(pano-projector
+		src/Command.cpp
+		src/extractFace.cpp
+		src/FaceCommand.cpp
+		src/FaceDiagramCommand.cpp
+		src/FaceInfo.cpp
+		src/InputImage.cpp
+		src/IntegerCropRect.cpp
+		src/main.cpp
+		src/MemoryBudget.cpp
+		src/OutputBase.cpp
+		src/OutputImage.cpp
+		src/OutputPyramid.cpp
+		src/OutputTiler.cpp
+		src/PyramidCommand.cpp
+)
 
 # Need std::filesystem and std::bit_width
 target_compile_features(pano-projector PRIVATE cxx_std_20)

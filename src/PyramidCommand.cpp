@@ -8,6 +8,7 @@
 #include "OutputPyramid.h"
 #include "FaceInfo.h"
 #include "extractFace.h"
+#include "MemoryBudget.h"
 
 namespace PanoProjector {
 
@@ -34,6 +35,8 @@ void PyramidCommand::initOptions() {
 			"The output image width and height (default: full resolution)")
 		("tile-size", po::value<int>()->default_value(512),
 		 	"The tile size in pixels")
+		("mem-limit", po::value<unsigned long>(),
+			"The approximate maximum memory usage in MiB")
 		("face", po::value<std::string>(),
 		 	"Which face to extract")
 		("levels", po::value<int>(),
@@ -90,6 +93,9 @@ int PyramidCommand::doRun() {
 		std::cerr << "Error: an input filename and an output directory must be specified.\n";
 		return 1;
 	}
+
+	setMemoryLimit();
+
 	CropRect cropRect{};
 	int face;
 	if (m_options.count("face")) {

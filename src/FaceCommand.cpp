@@ -15,6 +15,8 @@ void FaceCommand::initOptions() {
 		 	"Show help message and exit")
 		("size", po::value<int>()->default_value(0),
 			"The output image width and height (default: full resolution)")
+		("mem-limit", po::value<unsigned long>(),
+			"The approximate maximum memory usage in MiB")
 		("face", po::value<std::string>(),
 		 	"Which face to extract")
 		("quality", po::value<int>()->default_value(80),
@@ -55,6 +57,8 @@ int FaceCommand::doRun() {
 		std::cerr << "Error: the face must be specified.\n";
 		return 1;
 	}
+
+	setMemoryLimit();
 
 	auto & faceName = m_options["face"].as<std::string>();
 	int face = FaceInfo::getFaceFromName(faceName);

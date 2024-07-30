@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Command.h"
+#include "MemoryBudget.h"
 
 namespace PanoProjector {
 
@@ -48,6 +49,15 @@ int Command::run(int argc, char **argv) {
 	} catch (std::exception & e) {
 		std::cerr << "Error: " << e.what() << "\n";
 		return 1;
+	}
+}
+
+void Command::setMemoryLimit() {
+	if (m_options.count("mem-limit")) {
+		auto limit = m_options["mem-limit"].as<unsigned long>();
+		if (limit < ULONG_MAX / 1048576) {
+			g_memBudget.setLimit(limit * 1048576);
+		}
 	}
 }
 

@@ -1,4 +1,5 @@
 #include "InputImage.h"
+#include "MemoryBudget.h"
 
 #include <stdexcept>
 #include <cstring>
@@ -66,6 +67,7 @@ InputImage::InputImage(const std::string & path, const CropRect & cropRect)
 		throw std::runtime_error("Invalid cropped width");
 	}
 
+	g_memBudget.reserve(COMPONENTS, m_crop.width, m_crop.height);
 	m_data = new uint8_t[COMPONENTS * m_crop.width * m_crop.height];
 
 	if ((int)sourceCropWidth < m_width) {
@@ -109,6 +111,7 @@ InputImage::InputImage(const std::string & path, const CropRect & cropRect)
 
 InputImage::~InputImage()
 {
+	g_memBudget.release(COMPONENTS, m_crop.width, m_crop.height);
 	delete[] m_data;
 }
 
