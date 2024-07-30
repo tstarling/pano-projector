@@ -12,7 +12,9 @@ InputImage::InputImage(const std::string & path, const CropRect & cropRect)
 {
 	FILE * f = fopen(path.c_str(), "rb");
 	if (!f) {
-		throw std::runtime_error("Unable to open input image");
+		throw std::runtime_error(
+			std::string("Unable to open input image: ") +
+			std::string(strerror(errno)));
 	}
 
 	m_cinfo.err = jpeg_std_error(&m_jerr);

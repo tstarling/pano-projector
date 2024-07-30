@@ -1,5 +1,6 @@
 #include "OutputImage.h"
 #include <stdexcept>
+#include <cstring>
 
 namespace PanoProjector {
 
@@ -8,7 +9,10 @@ OutputImage::OutputImage(const std::string & name, int width, int height,
 {
 	m_file = fopen(name.c_str(), "wb");
 	if (m_file == nullptr) {
-		throw std::runtime_error("Error opening output file \"" + name + "\"");
+		throw std::runtime_error(
+			"Unable to open output file \"" + name + "\": " +
+			std::string(strerror(errno))
+		);
 	}
 	m_cinfo = new struct jpeg_compress_struct();
 	m_jerr = new struct jpeg_error_mgr();
