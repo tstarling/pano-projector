@@ -1,0 +1,2 @@
+`bass.jpg` is a photo by Ashley L. Conti and is in the public domain. For more
+information, see its [Wikimedia Commons image description page](https://commons.wikimedia.org/wiki/File:Internal_360_degree_view_from_Bass_Harbor_Head_Light.jpg).
